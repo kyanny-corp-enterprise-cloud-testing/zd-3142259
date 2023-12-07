@@ -1,0 +1,26 @@
+name: Invite a user
+
+on:
+  workflow_dispatch:
+    inputs:
+      invitee_email:
+        description: "Invitee's email"
+        required: true
+        type: string
+        default: "nobody@example.com"
+
+jobs:
+  invite:
+    runs-on: ubuntu-latest
+    steps:
+      - name: my-app-install token
+        id: my-app
+        uses: getsentry/action-github-app-token@v2
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+      - name: invite a user
+        run: |
+          gh api /orgs/kyanny-corp-enterprise-cloud-testing/invitations -f email="${{ inputs.invitee_email }}" -f role="direct_member"
+        env:
+          GITHUB_TOKEN: ${{ steps.my-app.outputs.token }}
